@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Compilation des programmes
+gcc -o P150 P150.c
+gcc -o P250 P250.c
+
+if [[ $? -ne 0 ]]; then
+    echo "Erreur : La compilation a échoué."
+    exit 1
+fi
+
+# Lancer le récepteur en arrière-plan
+./P250 &
+Cible=$!
+
+if [[ $? -ne 0 ]]; then
+    echo "Erreur : Impossible de lancer le récepteur."
+    exit 1
+fi
+
+echo "Récepteur lancé avec PID $Cible."
+echo "Entrez vos messages. Tapez 'exit' pour arrêter."
+
+# Boucle pour saisir plusieurs messages
+while true; do
+    read -p "Message : " message
+
+    # Envoyer le message via l'émetteur
+    ./P150 $Cible "$message"
+
+    # Si le message est "exit", sortir de la boucle
+    if [[ "$message" == "exit" ]]; then
+        echo "Arrêt en cours... Les messages seront affichés par le récepteur."
+        break
+    fi
+done
+
+
+
+
+
